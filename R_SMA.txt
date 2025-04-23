@@ -1,0 +1,41 @@
+# Make sure 'TikTok_Data.csv' is in your working directory
+df <- read_csv("TikTok_Data.csv")
+
+# View the first few rows
+head(df)
+
+
+# Basic summary
+summary(df)
+
+# Structure of the dataset
+str(df)
+
+
+colSums(is.na(df))
+
+
+ggplot(df, aes(x = Views)) +
+  geom_histogram(binwidth = 5000, fill = "steelblue", color = "black") +
+  labs(title = "Distribution of Views", x = "Views", y = "Frequency")
+
+
+numeric_cols <- df %>% select(Views, Shares, Comments, Likes, Length, avg_watch)
+boxplot(numeric_cols, main = "Boxplots of Numeric Variables", col = "lightgreen", las = 2)
+
+
+cor_matrix <- cor(na.omit(numeric_cols))
+corrplot(cor_matrix, method = "color", type = "upper", tl.col = "black", addCoef.col = "black")
+
+
+ggplot(df, aes(x = Views, y = Likes)) +
+  geom_point(color = "purple", alpha = 0.6) +
+  labs(title = "Scatter Plot: Views vs Likes", x = "Views", y = "Likes")
+
+
+p <- ggplot(df, aes(x = Views, y = avg_watch, color = Comments)) +
+  geom_point(size = 2) +
+  labs(title = "Interactive Views vs Avg Watch by Comments")
+ggplotly(p)
+
+
