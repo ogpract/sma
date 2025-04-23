@@ -1,0 +1,86 @@
+
+# ✅ 1. lxml – Fast HTML/XML parser
+import requests
+from lxml import html
+
+url = 'https://quotes.toscrape.com/'
+response = requests.get(url)
+tree = html.fromstring(response.content)
+
+quotes = tree.xpath('//span[@class="text"]/text()')
+authors = tree.xpath('//small[@class="author"]/text()')
+
+for i in range(len(quotes)):
+    print(f"{i+1}. {quotes[i]} — {authors[i]}")
+# 🔹 Pros:
+# Very fast
+
+# Supports XPath
+
+# No browser needed
+
+# ✅ 2. Scrapy – Powerful scraping framework
+
+pip install scrapy
+Then create a spider:
+
+
+scrapy startproject quotes_scraper
+cd quotes_scraper
+scrapy genspider quotes quotes.toscrape.com
+Edit quotes.py:
+
+import scrapy
+
+class QuotesSpider(scrapy.Spider):
+    name = "quotes"
+    start_urls = ['http://quotes.toscrape.com']
+
+    def parse(self, response):
+        for quote in response.css('div.quote'):
+            yield {
+                'text': quote.css('span.text::text').get(),
+                'author': quote.css('small.author::text').get()
+            }
+Run it:
+
+
+scrapy crawl quotes -o quotes.json
+# 🔹 Pros:
+# Handles pagination, delays, headers
+
+# Best for large-scale projects
+
+# ✅ 3. pandas.read_html() – Super easy for tables
+import pandas as pd
+
+url = 'https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)'
+tables = pd.read_html(url)
+
+# Show first table
+df = tables[0]
+print(df.head())
+# 🔹 Pros:
+# Easiest for scraping HTML tables
+
+# Automatically parses and converts to DataFrame
+
+# ✅ 4. requests-html – Great for dynamic JS pages
+
+pip install requests-html
+from requests_html import HTMLSession
+
+session = HTMLSession()
+r = session.get('https://quotes.toscrape.com/')
+r.html.render()  # Renders JavaScript
+
+quotes = r.html.find('.quote')
+for i, quote in enumerate(quotes, 1):
+    text = quote.find('span.text', first=True).text
+    author = quote.find('small.author', first=True).text
+    print(f"{i}. {text} — {author}")
+# 🔹 Pros:
+# Renders JavaScript (alternative to Selenium)
+
+# Easy syntax similar to BeautifulSoup
+
